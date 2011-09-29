@@ -44,6 +44,9 @@ public class Map implements Defines {
 					case COL_BIG:
 						dots.add(new Pickup(ix+0.5f,iy+0.5f,Pickup.PICKUP_BIG));
 						break;
+					case COL_GHOST:
+						ghosts.add(new Ghost(ix,iy,0));
+						break;
 					default:
 				}
 			}
@@ -169,6 +172,7 @@ public class Map implements Defines {
 	private static final int COL_PORTAL	= 255 << 24 | 255 << 16 | 255;
 	private static final int COL_SMALL  = 255 << 24 | 255 << 16 | 255 << 8 | 255;
 	private static final int COL_BIG 	= 255 << 24 | 255 << 8;
+	private static final int COL_GHOST 	= 255 << 24 | 255 << 8 | 255;
 
 	// Tile data values
 	private static final int TILE_FLOOR 	= 0;

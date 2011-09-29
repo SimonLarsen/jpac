@@ -21,19 +21,20 @@ public class Game implements Defines {
 	/**
 	 * Main game loop.
 	 */
-	private void loop(){
+	private void loop() throws Exception {
 		running = true;
 
 		dots = new ArrayList<Pickup>();
 		ghosts = new ArrayList<Ghost>(4);
 
 		map = new Map();
-		try { map.loadFromImage("res/levels/1.png",dots,ghosts); }
-		catch (Exception e){ System.out.println("FUCK"); }
+		map.loadFromImage("res/levels/1.png",dots,ghosts);
 
 		pl = new Player();
 		pl.x = map.startx;
 		pl.z = map.startz;
+
+		getDelta(); // To calibrate
 
 		while(running){
 			float dt = getDelta();
@@ -42,6 +43,10 @@ public class Game implements Defines {
 			}
 
 			pl.update(dt,map);
+
+			for(int i = 0; i < ghosts.size(); ++i){
+				ghosts.get(i).update(dt,map);
+			}
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			draw();
@@ -71,14 +76,16 @@ public class Game implements Defines {
 			dots.get(i).draw(pl.xdirdeg);
 		}
 
-		// TODO Draw ghosts
+		for(int i = 0; i < ghosts.size(); ++i){
+			ghosts.get(i).draw(pl.xdirdeg);
+		}
 		// TODO Draw particles
 	}
 
 	/**
 	 * Gets the number of seconds passed since last call.
 	 *
-	 * @return Delta time in as a floating point value
+	 * @return Delta time as a floating point value
 	 */
 	private float getDelta(){
 		long time = (Sys.getTime() * 1000) / Sys.getTimerResolution();
