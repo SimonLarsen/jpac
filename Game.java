@@ -7,6 +7,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.Sys;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 public class Game implements Defines {
 	private boolean running;
@@ -14,6 +15,8 @@ public class Game implements Defines {
 
 	public static Player pl;
 	public static Map map;
+	public static ArrayList<Pickup> dots;
+	public static ArrayList<Ghost> ghosts;
 
 	/**
 	 * Main game loop.
@@ -21,12 +24,17 @@ public class Game implements Defines {
 	private void loop(){
 		running = true;
 
+		dots = new ArrayList<Pickup>();
+		ghosts = new ArrayList<Ghost>(4);
+
 		map = new Map();
+		try { map.loadFromImage("res/levels/1.png",dots,ghosts); }
+		catch (Exception e){ System.out.println("FUCK"); }
+
 		pl = new Player();
 		pl.x = map.startx;
 		pl.z = map.startz;
 
-		Mouse.setCursorPosition(WIDTH/2,HEIGHT/2);
 		while(running){
 			float dt = getDelta();
 			if(Display.isCloseRequested()){
@@ -48,12 +56,21 @@ public class Game implements Defines {
 		glRotatef(pl.ydirdeg,1,0,0);
 		glRotatef(pl.xdirdeg,0,1,0);
 
-		glTranslatef(-pl.x,-pl.y,-pl.z);
-		// TODO Draw shadow
+		glTranslatef(0,-pl.y,0);
+		glBegin(GL_QUADS);
+			glTexCoord2f(1.f/8.f, 0.25f); 		glVertex3f(-0.25f,0.02f,-0.25f);
+			glTexCoord2f(2.f/8.f, 0.25f); 		glVertex3f(0.25f,0.02f,-0.25f);
+			glTexCoord2f(2.f/8.f, 3.f/8.f); 	glVertex3f(0.25f,0.02f,0.25f);
+			glTexCoord2f(1.f/8.f, 3.f/8.f); 	glVertex3f(-0.25f,0.02f,0.25f);
+		glEnd();
+		glTranslatef(-pl.x,0,-pl.z);
 		
 		map.drawWalls();
 
-		// TODO Draw dots
+		for(int i = 0; i < dots.size(); ++i) {
+			dots.get(i).draw(pl.xdirdeg);
+		}
+
 		// TODO Draw ghosts
 		// TODO Draw particles
 	}
