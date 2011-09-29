@@ -12,14 +12,19 @@ public class Game implements Defines {
 	private boolean running;
 	private long lastUpdate;
 
+	public static Player pl;
+	public static Map map;
+
 	/**
 	 * Main game loop.
 	 */
 	private void loop(){
 		running = true;
-		float rot = 0.f;
 
-		Player pl = new Player();
+		map = new Map();
+		pl = new Player();
+		pl.x = map.startx;
+		pl.z = map.startz;
 
 		Mouse.setCursorPosition(WIDTH/2,HEIGHT/2);
 		while(running){
@@ -28,13 +33,29 @@ public class Game implements Defines {
 				running = false;
 			}
 
-			pl.update(dt);
+			pl.update(dt,map);
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glLoadIdentity();
+			draw();
 
 			Display.update();
 		}
+	}
+
+	private void draw(){
+		glLoadIdentity();
+
+		glRotatef(pl.ydirdeg,1,0,0);
+		glRotatef(pl.xdirdeg,0,1,0);
+
+		glTranslatef(-pl.x,-pl.y,-pl.z);
+		// TODO Draw shadow
+		
+		map.drawWalls();
+
+		// TODO Draw dots
+		// TODO Draw ghosts
+		// TODO Draw particles
 	}
 
 	/**
@@ -52,16 +73,11 @@ public class Game implements Defines {
 	/**
 	 * Sets up display and initializes OpenGL settings
 	 *
-	 * @return True if succeeded.
+	 * @throws LWJGLException if display couldn't be created.
 	 */
-	private boolean init(){
-		try{
-			Display.setDisplayMode(new DisplayMode(WIDTH,HEIGHT));
-			Display.create();
-		} catch (LWJGLException e){
-			e.printStackTrace();
-			return false;
-		}
+	private void init() throws Exception {
+		Display.setDisplayMode(new DisplayMode(WIDTH,HEIGHT));
+		Display.create();
 		// Setup view matrix
 		glViewport(0,0,WIDTH,HEIGHT);
 		glMatrixMode(GL_PROJECTION);
@@ -77,6 +93,7 @@ public class Game implements Defines {
 		glEnable(GL_DEPTH_TEST);
 		// Enable textures
 		glEnable(GL_TEXTURE_2D);
+		// Setup blending (only used for screen effect as of now)
 		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 		glDisable(GL_BLEND);
 		// Use alpha test, for billboard sprites with transparency
@@ -93,8 +110,6 @@ public class Game implements Defines {
 		glFogf(GL_FOG_END, 6.0f);
 		glEnable(GL_FOG);
 		Mouse.setGrabbed(true);
-
-		return true;
 	}
 
 	/**
@@ -106,11 +121,14 @@ public class Game implements Defines {
 	 */
 	public void start() throws Exception {
 		// Setup screen and OpenGL stuff
-		if(init() == false){
-			throw new Exception("Couldn't set up display");
-		}
+		init();
+
+		// Load resources
+		ResMgr.loadTextures();
+
 		// Start game loop
 		loop();
+
 		// Destroy display before returning
 		Display.destroy();
 	}

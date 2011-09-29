@@ -1,4 +1,5 @@
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 public class Player implements Defines {
 	public float x,y,z;
@@ -18,21 +19,43 @@ public class Player implements Defines {
 		bop = 0.f;
 	}
 
-	public void update(float dt){
+	public void update(float dt, Map map){
 		float nx = x;
 		float nz = z;
 		boolean moved = false;
 
 		// Alive
 		if(state == 0){
-			if(Keyboard.isKeyDown(Keyboard.KEY_UP)){
+			// Check keyboard input
+			if(Keyboard.isKeyDown(Keyboard.KEY_W)){
 				nx += (float)(Math.sin(xdir)*WALKSPEED*dt);
 				nz -= (float)(Math.cos(xdir)*WALKSPEED*dt);
 				moved = true;
 			}
+			if(Keyboard.isKeyDown(Keyboard.KEY_S)){
+				nx -= (float)(Math.sin(xdir)*WALKSPEED*dt);
+				nz += (float)(Math.cos(xdir)*WALKSPEED*dt);
+				moved = true;
+			}
+			if(Keyboard.isKeyDown(Keyboard.KEY_A)){
+				nx -= (float)(Math.cos(xdir)*STRAFESPEED*dt);
+				nz -= (float)(Math.sin(xdir)*STRAFESPEED*dt);
+				moved = true;
+			}
+			if(Keyboard.isKeyDown(Keyboard.KEY_D)){
+				nx += (float)(Math.cos(xdir)*STRAFESPEED*dt);
+				nz += (float)(Math.sin(xdir)*STRAFESPEED*dt);
+				moved = true;
+			}
+			
+			// Check mouse movement
+			xdir += (float)Mouse.getDX()*dt;
+			xdirdeg = xdir * RADDEG;
+			ydir -= (float)Mouse.getDY()*dt;
+			if(ydir < -Math.PI/2.f){ ydir = (float)-Math.PI/2.f; }
+			else if(ydir > Math.PI/2.f){ ydir = (float)Math.PI/2.f; }
+			ydirdeg = ydir * RADDEG;
 
-			// TODO: Check all controls, inclusive mouse aim
-			//
 			if(moved){
 				bop += 7.f*dt*WALKSPEED;
 				if(bop > 2.f*Math.PI){
@@ -41,9 +64,18 @@ public class Player implements Defines {
 				}
 				y = (float)(0.6+Math.sin(bop - 1.f)/35.f);
 
-				// TODO Do collision checking
-				x = nx;
-				z = nz;
+				// Check collision with walls
+				// x axis
+				if(map.canMove(nx-0.25f,z-0.25f) && map.canMove(nx+0.25f,z-0.25f) && map.canMove(nx-0.25f,z+0.25f) && map.canMove(nx+0.25f,z+0.25f)){
+					x = nx;
+				}
+				// y axis
+				if(map.canMove(x-0.25f,nz-0.25f) && map.canMove(x+0.25f,nz-0.25f) && map.canMove(x-0.25f,nz+0.25f) && map.canMove(x+0.25f,nz+0.25f)){
+					z = nz;
+				}
+				// Wrap if through portal
+				if(x < 0.3f){ x = map.w-0.5f; }
+				else if(x > map.w-0.3f){ x = 0.5f; }
 			}
 		}
 		// Dying/dead
