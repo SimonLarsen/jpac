@@ -188,25 +188,25 @@ public class Map implements Defines {
 
 	private void drawPortalParticles(){
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.f,1.f,0.f);
-			glTexCoord2f(1.f,0.f); 			glVertex3f(0.f,1.f,1.f);
-			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.f,0.f,1.f);
-			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.f,0.f,0.f);
+			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.2f,1.f,0.2f);
+			glTexCoord2f(1.f,0.f); 			glVertex3f(0.2f,1.f,0.8f);
+			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.2f,0.f,0.8f);
+			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.2f,0.f,0.2f);
 
-			glTexCoord2f(1.f,0.f); 			glVertex3f(0.33f,1.f,0.f);
-			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.33f,1.f,1.f);
-			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.33f,0.f,1.f);
-			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.33f,0.f,0.f);
+			glTexCoord2f(1.f,0.f); 			glVertex3f(0.4f,1.f,0.f);
+			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.4f,1.f,1.f);
+			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.4f,0.f,1.f);
+			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.4f,0.f,0.f);
 
-			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.66f,1.f,0.f);
-			glTexCoord2f(1.f,0.f); 			glVertex3f(0.66f,1.f,1.f);
-			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.66f,0.f,1.f);
-			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.66f,0.f,0.f);
+			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.6f,1.f,0.f);
+			glTexCoord2f(1.f,0.f); 			glVertex3f(0.6f,1.f,1.f);
+			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.6f,0.f,1.f);
+			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.6f,0.f,0.f);
 
-			glTexCoord2f(1.f,0.f); 			glVertex3f(1.f,1.f,1.f);
-			glTexCoord2f(0.75f,0.f); 		glVertex3f(1.f,1.f,0.f);
-			glTexCoord2f(0.75f,0.25f); 		glVertex3f(1.f,0.f,0.f);
-			glTexCoord2f(1.f,0.25f); 		glVertex3f(1.f,0.f,1.f);
+			glTexCoord2f(1.f,0.f); 			glVertex3f(0.8f,1.f,0.8f);
+			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.8f,1.f,0.2f);
+			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.8f,0.f,0.2f);
+			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.8f,0.f,0.8f);
 		glEnd();
 	}
 
