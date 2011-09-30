@@ -7,11 +7,28 @@ import java.util.ArrayList;
 
 public class Map implements Defines {
 	public int w,h,numDots,numBigDots;
-	float startx,startz;
-	char[] data;
+	public float startx,startz;
+	public char[] data;
+	private float lampTime,particleTime;
+	private boolean lampOn;
 
 	public Map(){
 
+	}
+
+	public void update(float dt){
+		if(lampTime < 0){
+			if(lampOn){
+				lampTime = (float)(Math.random()%0.1f + 0.05f);
+			}
+			else{
+				lampTime = (float)(Math.random()%0.5f + 0.1f);
+			}
+			lampOn = !lampOn;
+		}
+		lampTime -= dt;
+
+		particleTime = (particleTime+dt)%1.f;
 	}
 
 	public void loadFromImage(String filename, ArrayList<Pickup> dots, ArrayList<Ghost> ghosts) throws Exception {
@@ -21,6 +38,7 @@ public class Map implements Defines {
 		w = img.getWidth();
 		h = img.getHeight();
 		data = new char[w*h];
+		int ghostnum = 0;
 
 		for(int iy = 0; iy < h; ++iy){
 			for(int ix = 0; ix < w; ++ix){
@@ -45,7 +63,8 @@ public class Map implements Defines {
 						dots.add(new Pickup(ix+0.5f,iy+0.5f,Pickup.PICKUP_BIG));
 						break;
 					case COL_GHOST:
-						ghosts.add(new Ghost(ix,iy,0));
+						ghosts.add(new Ghost(ix,iy,ghostnum));
+						ghostnum = (ghostnum+1)%4;
 						break;
 					default:
 				}
@@ -115,44 +134,47 @@ public class Map implements Defines {
 						glEnd();
 						break;
 					case TILE_LAMP:
-						glBegin(GL_QUADS);
-							glTexCoord2f(0.5f,0.25f); 		glVertex3f(0.f,1.f,0.f);
-							glTexCoord2f(0.75f,0.25f); 		glVertex3f(1.f,1.f,0.f);
-							glTexCoord2f(0.75f,0.5f); 		glVertex3f(1.f,1.f,1.f);
-							glTexCoord2f(0.5f,0.5f); 		glVertex3f(0.f,1.f,1.f);
-
-							glTexCoord2f(0.25f,0.25f); 		glVertex3f(0.f,0.f,0.f);
-							glTexCoord2f(0.5f,0.25f); 		glVertex3f(1.f,0.f,0.f);
-							glTexCoord2f(0.5f,0.5f); 		glVertex3f(1.f,0.f,1.f);
-							glTexCoord2f(0.25f,0.5f); 		glVertex3f(0.f,0.f,1.f);
-						glEnd();
+						if(lampOn){
+							glBegin(GL_QUADS);
+								glTexCoord2f(0.5f,0.25f); 		glVertex3f(0.f,1.f,0.f);
+								glTexCoord2f(0.75f,0.25f); 		glVertex3f(1.f,1.f,0.f);
+								glTexCoord2f(0.75f,0.5f); 		glVertex3f(1.f,1.f,1.f);
+								glTexCoord2f(0.5f,0.5f); 		glVertex3f(0.f,1.f,1.f);
+								glTexCoord2f(0.25f,0.25f); 		glVertex3f(0.f,0.f,0.f);
+								glTexCoord2f(0.5f,0.25f); 		glVertex3f(1.f,0.f,0.f);
+								glTexCoord2f(0.5f,0.5f); 		glVertex3f(1.f,0.f,1.f);
+								glTexCoord2f(0.25f,0.5f); 		glVertex3f(0.f,0.f,1.f);
+							glEnd();
+						}
+						else{
+							glBegin(GL_QUADS);
+								glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.f,1.f,0.f);
+								glTexCoord2f(1.f,0.25f); 		glVertex3f(1.f,1.f,0.f);
+								glTexCoord2f(1.f,0.5f); 		glVertex3f(1.f,1.f,1.f);
+								glTexCoord2f(0.75f,0.5f); 		glVertex3f(0.f,1.f,1.f);
+								glTexCoord2f(0.25f,0.f); 		glVertex3f(0.f,0.f,0.f);
+								glTexCoord2f(0.5f,0.f); 		glVertex3f(1.f,0.f,0.f);
+								glTexCoord2f(0.5f,0.25f); 		glVertex3f(1.f,0.f,1.f);
+								glTexCoord2f(0.25f,0.25f); 		glVertex3f(0.f,0.f,1.f);
+							glEnd();
+						}
 						break;
 					case TILE_PORTAL:
+						glPushMatrix();
+							glTranslatef(0.f,-particleTime,0.f);
+							drawPortalParticles();
+							glTranslatef(0.f,1.f,0.f);
+							drawPortalParticles();
+						glPopMatrix();
 						glBegin(GL_QUADS);
-							glTexCoord2f(0.75f,0.f); 		glVertex3f(0.f,1.f,0.f);
-							glTexCoord2f(1.f,0.f); 			glVertex3f(0.f,1.f,1.f);
-							glTexCoord2f(1.f,0.25f); 		glVertex3f(0.f,0.f,1.f);
-							glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.f,0.f,0.f);
-
-							glTexCoord2f(0.75f,0.f); 		glVertex3f(0.33f,1.f,0.f);
-							glTexCoord2f(1.f,0.f); 			glVertex3f(0.33f,1.f,1.f);
-							glTexCoord2f(1.f,0.25f); 		glVertex3f(0.33f,0.f,1.f);
-							glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.33f,0.f,0.f);
-
-							glTexCoord2f(0.75f,0.f); 		glVertex3f(0.66f,1.f,0.f);
-							glTexCoord2f(1.f,0.f); 			glVertex3f(0.66f,1.f,1.f);
-							glTexCoord2f(1.f,0.25f); 		glVertex3f(0.66f,0.f,1.f);
-							glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.66f,0.f,0.f);
-
-							glTexCoord2f(0.75f,0.f); 		glVertex3f(1.f,1.f,1.f);
-							glTexCoord2f(1.f,0.f); 			glVertex3f(1.f,1.f,0.f);
-							glTexCoord2f(1.f,0.25f); 		glVertex3f(1.f,0.f,0.f);
-							glTexCoord2f(0.75f,0.25f); 		glVertex3f(1.f,0.f,1.f);
-
-							glTexCoord2f(0.f,0.5f); 		glVertex3f(0.f,0.f,0.f);
-							glTexCoord2f(0.25f,0.5f); 		glVertex3f(1.f,0.f,0.f);
-							glTexCoord2f(0.25f,0.75f); 		glVertex3f(1.f,0.f,1.f);
-							glTexCoord2f(0.f,0.75f); 		glVertex3f(0.f,0.f,1.f);
+							glTexCoord2f(0.f,0.25f); 		glVertex3f(0.f,0.f,0.f);
+							glTexCoord2f(0.25f,0.25f); 		glVertex3f(1.f,0.f,0.f);
+							glTexCoord2f(0.25f,0.5f); 		glVertex3f(1.f,0.f,1.f);
+							glTexCoord2f(0.f,0.5f); 		glVertex3f(0.f,0.f,1.f);
+							glTexCoord2f(0.f,0.25f); 		glVertex3f(0.f,1.f,0.f);
+							glTexCoord2f(0.25f,0.25f); 		glVertex3f(1.f,1.f,0.f);
+							glTexCoord2f(0.25f,0.5f); 		glVertex3f(1.f,1.f,1.f);
+							glTexCoord2f(0.f,0.5f); 		glVertex3f(0.f,1.f,1.f);
 						glEnd();
 						break;
 					default:
@@ -162,6 +184,30 @@ public class Map implements Defines {
 			glTranslatef(-w,0,1);
 		}
 		glPopMatrix();
+	}
+
+	private void drawPortalParticles(){
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.f,1.f,0.f);
+			glTexCoord2f(1.f,0.f); 			glVertex3f(0.f,1.f,1.f);
+			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.f,0.f,1.f);
+			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.f,0.f,0.f);
+
+			glTexCoord2f(1.f,0.f); 			glVertex3f(0.33f,1.f,0.f);
+			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.33f,1.f,1.f);
+			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.33f,0.f,1.f);
+			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.33f,0.f,0.f);
+
+			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.66f,1.f,0.f);
+			glTexCoord2f(1.f,0.f); 			glVertex3f(0.66f,1.f,1.f);
+			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.66f,0.f,1.f);
+			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.66f,0.f,0.f);
+
+			glTexCoord2f(1.f,0.f); 			glVertex3f(1.f,1.f,1.f);
+			glTexCoord2f(0.75f,0.f); 		glVertex3f(1.f,1.f,0.f);
+			glTexCoord2f(0.75f,0.25f); 		glVertex3f(1.f,0.f,0.f);
+			glTexCoord2f(1.f,0.25f); 		glVertex3f(1.f,0.f,1.f);
+		glEnd();
 	}
 
 	// Image color values

@@ -1,5 +1,6 @@
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import java.util.ArrayList;
 
 public class Player implements Defines {
 	public float x,y,z;
@@ -90,7 +91,24 @@ public class Player implements Defines {
 		}
 	}
 
-	public void collideGhosts(){
+	public int collideDots(ArrayList<Pickup> dots){
+		int ret = 0;
+		for(int i = dots.size()-1; i >= 0; --i){
+			float xdist = this.x - dots.get(i).x;
+			float zdist = this.z - dots.get(i).z;
+			float dist = xdist*xdist + zdist*zdist;
+			if(dist < 0.1f){
+				if(dots.get(i).type == Pickup.PICKUP_BIG){
+					ret = 1;
+					// TODO: Play bigdot sound
+				}
+				dots.remove(i);
+			}
+		}
+		return ret;
+	}
+
+	public void collideGhosts(ArrayList<Ghost> ghosts){
 
 	}
 

@@ -17,18 +17,18 @@ public class Pickup implements Defines {
 		switch(type){
 			case PICKUP_SMALL:
 				glBegin(GL_QUADS);
-					glTexCoord2f(0.f,1.f/4.f); 			glVertex3f(-0.125f,0.25f,0.f);
-					glTexCoord2f(1.f/16.f,1.f/4.f); 	glVertex3f(0.125f,0.25f,0.f);
-					glTexCoord2f(1.f/16.f,5.f/16.f); 	glVertex3f(0.125f,0.f,0.f);
-					glTexCoord2f(0.f,5.f/16.f); 		glVertex3f(-0.125f,0.f,0.f);
+					glTexCoord2f(7.f/8.f,0.f); 			glVertex3f(-0.125f,0.25f,0.f);
+					glTexCoord2f(15.f/16.f,0f); 		glVertex3f(0.125f,0.25f,0.f);
+					glTexCoord2f(15.f/16.f,1.f/16.f); 	glVertex3f(0.125f,0.f,0.f);
+					glTexCoord2f(7.f/8.f,1.f/16.f); 	glVertex3f(-0.125f,0.f,0.f);
 				glEnd();
 				break;
 			case PICKUP_BIG:
 				glBegin(GL_QUADS);
-					glTexCoord2f(1.f/8.f,3.f/8.f); 		glVertex3f(-0.25f,0.5f,0.f);
-					glTexCoord2f(1.f/4.f,3.f/8.f); 		glVertex3f(0.25f,0.5f,0.f);
-					glTexCoord2f(1.f/4.f,1.f/2.f); 		glVertex3f(0.25f,0.f,0.f);
-					glTexCoord2f(1.f/8.f,1.f/2.f); 		glVertex3f(-0.25f,0.f,0.f);
+					glTexCoord2f(6.f/8.f,0.f); 			glVertex3f(-0.25f,0.5f,0.f);
+					glTexCoord2f(7.f/8.f,0.f); 			glVertex3f(0.25f,0.5f,0.f);
+					glTexCoord2f(7.f/8.f,1.f/8.f); 		glVertex3f(0.25f,0.f,0.f);
+					glTexCoord2f(6.f/8.f,1.f/8.f); 		glVertex3f(-0.25f,0.f,0.f);
 				glEnd();
 				break;
 		}

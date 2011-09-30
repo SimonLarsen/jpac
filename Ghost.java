@@ -1,7 +1,7 @@
 import static org.lwjgl.opengl.GL11.*;
 public class Ghost implements Defines {
 	public float x,z,scaredTime;
-	public int color;
+	public float color;
 	public boolean alive;
 
 	private float startx,startz,moved;
@@ -10,10 +10,13 @@ public class Ghost implements Defines {
 	public Ghost(float x, float z, int color){
 		startx = x+0.5f;
 		startz = z+0.5f;
-		this.x = startx;
-		this.z = startz;
-		this.color = color;
+		this.color = color*(1.f/8.f); // IS offset on tilemap, not just number
+		respawn();
+	}
 
+	public void respawn(){
+		x = startx;
+		z = startz;
 		alive = true;
 		scaredTime = 0.f;
 		moved = 1.f;
@@ -69,6 +72,10 @@ public class Ghost implements Defines {
 		}
 	}
 
+	public void setScared(){
+		scaredTime = SCAREDTIME;
+	}
+
 	public void draw(float dirdeg){
 		glPushMatrix();
 		glTranslatef(x,0,z);
@@ -83,18 +90,18 @@ public class Ghost implements Defines {
 
 		if(drawScared){
 			glBegin(GL_QUADS);
-				glTexCoord2f(4.f/8.f, 7.f/8.f); 	glVertex3f(-0.45f,0.9f,0.f);
-				glTexCoord2f(5.f/8.f,7.f/8.f); 		glVertex3f(0.45f,0.9f,0.f);
-				glTexCoord2f(5.f/8.f,1.f); 			glVertex3f(0.45f,0.f,0.f);
-				glTexCoord2f(4.f/8.f, 1.f); 		glVertex3f(-0.45f,0.f,0.f);
+				glTexCoord2f(4.f/8.f, 0.f); 		glVertex3f(-0.45f,0.9f,0.f);
+				glTexCoord2f(5.f/8.f, 0.f); 		glVertex3f(0.45f,0.9f,0.f);
+				glTexCoord2f(5.f/8.f, 1.f/8.f);		glVertex3f(0.45f,0.f,0.f);
+				glTexCoord2f(4.f/8.f, 1.f/8.f); 	glVertex3f(-0.45f,0.f,0.f);
 			glEnd();
 		}
 		else{
 			glBegin(GL_QUADS);
-				glTexCoord2f(0.f, 7.f/8.f); 		glVertex3f(-0.45f,0.9f,0.f);
-				glTexCoord2f(1.f/8.f,7.f/8.f); 		glVertex3f(0.45f,0.9f,0.f);
-				glTexCoord2f(1.f/8.f,1.f); 			glVertex3f(0.45f,0.f,0.f);
-				glTexCoord2f(0.f, 1.f); 			glVertex3f(-0.45f,0.f,0.f);
+				glTexCoord2f(color, 0.f); 				glVertex3f(-0.45f,0.9f,0.f);
+				glTexCoord2f(color+1.f/8.f, 0.f); 		glVertex3f(0.45f,0.9f,0.f);
+				glTexCoord2f(color+1.f/8.f, 1.f/8.f); 	glVertex3f(0.45f,0.f,0.f);
+				glTexCoord2f(color, 1.f/8.f); 			glVertex3f(-0.45f,0.f,0.f);
 			glEnd();
 		}
 		glPopMatrix();

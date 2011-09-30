@@ -43,6 +43,12 @@ public class Game implements Defines {
 			}
 
 			pl.update(dt,map);
+			if(pl.collideDots(dots) == 1){
+				for(int i = 0; i < ghosts.size(); ++i){
+					ghosts.get(i).setScared();
+				}
+			}
+			map.update(dt);
 
 			for(int i = 0; i < ghosts.size(); ++i){
 				ghosts.get(i).update(dt,map);
@@ -61,16 +67,21 @@ public class Game implements Defines {
 		glRotatef(pl.ydirdeg,1,0,0);
 		glRotatef(pl.xdirdeg,0,1,0);
 
+		ResMgr.tiles.bind();
+
 		glTranslatef(0,-pl.y,0);
+		// Draw shadow
 		glBegin(GL_QUADS);
-			glTexCoord2f(1.f/8.f, 0.25f); 		glVertex3f(-0.25f,0.02f,-0.25f);
-			glTexCoord2f(2.f/8.f, 0.25f); 		glVertex3f(0.25f,0.02f,-0.25f);
-			glTexCoord2f(2.f/8.f, 3.f/8.f); 	glVertex3f(0.25f,0.02f,0.25f);
-			glTexCoord2f(1.f/8.f, 3.f/8.f); 	glVertex3f(-0.25f,0.02f,0.25f);
+			glTexCoord2f(6.f/8.f,4.f/8.f); 	glVertex3f(-0.25f,0.02f,-0.25f);
+			glTexCoord2f(1.f, 4.f/8.f); 		glVertex3f(0.25f,0.02f,-0.25f);
+			glTexCoord2f(1.f, 6.f/8.f); 		glVertex3f(0.25f,0.02f,0.25f);
+			glTexCoord2f(6.f/8.f, 6.f/8.f); 	glVertex3f(-0.25f,0.02f,0.25f);
 		glEnd();
 		glTranslatef(-pl.x,0,-pl.z);
 		
 		map.drawWalls();
+
+		ResMgr.sprites.bind();
 
 		for(int i = 0; i < dots.size(); ++i) {
 			dots.get(i).draw(pl.xdirdeg);
