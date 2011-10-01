@@ -17,6 +17,7 @@ public class Game implements Defines {
 	public static Map map;
 	public static ArrayList<Pickup> dots;
 	public static ArrayList<Ghost> ghosts;
+	public static ArrayList<Particle> particles;
 
 	/**
 	 * Main game loop.
@@ -24,8 +25,9 @@ public class Game implements Defines {
 	private void loop() throws Exception {
 		running = true;
 
-		dots = new ArrayList<Pickup>();
+		dots = new ArrayList<Pickup>(32);
 		ghosts = new ArrayList<Ghost>(4);
+		particles = new ArrayList<Particle>();
 
 		map = new Map();
 		map.loadFromImage("res/levels/1.png",dots,ghosts);
@@ -48,10 +50,28 @@ public class Game implements Defines {
 					ghosts.get(i).setScared();
 				}
 			}
+			pl.collideGhosts(ghosts);
 			map.update(dt);
 
+			// Update ghosts
 			for(int i = 0; i < ghosts.size(); ++i){
-				ghosts.get(i).update(dt,map);
+				Ghost g = ghosts.get(i);
+				if(g.alive){
+					g.update(dt,map);
+				}
+				else{
+					particles.add(new GhostDieParticle(g.x,g.z));
+					g.respawn();
+				}
+			}
+			// Update particles
+			for(int i = particles.size()-1; i >= 0; --i){
+				if(particles.get(i).alive){
+					particles.get(i).update(dt);
+				}
+				else{
+					particles.remove(i);
+				}
 			}
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -86,11 +106,12 @@ public class Game implements Defines {
 		for(int i = 0; i < dots.size(); ++i) {
 			dots.get(i).draw(pl.xdirdeg);
 		}
-
 		for(int i = 0; i < ghosts.size(); ++i){
 			ghosts.get(i).draw(pl.xdirdeg);
 		}
-		// TODO Draw particles
+		for(int i = 0; i < particles.size(); ++i){
+			particles.get(i).draw(pl.xdirdeg);
+		}
 	}
 
 	/**

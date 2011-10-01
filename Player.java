@@ -109,7 +109,24 @@ public class Player implements Defines {
 	}
 
 	public void collideGhosts(ArrayList<Ghost> ghosts){
-
+		for(int i = 0; i < ghosts.size(); ++i){
+			Ghost g = ghosts.get(i);
+			float xdist = this.x - g.x;
+			float zdist = this.z - g.z;
+			float dist = xdist*xdist + zdist*zdist;
+			if(dist < 0.25f){
+				if(g.scaredTime > 0.f){
+					g.alive = false;
+					// TODO Play ghost kill sound
+				}
+				else{
+					if(state != 1){
+						// TODO Play player killed sound
+						state = 1;
+					}
+				}
+			}
+		}
 	}
 
 	public void drawEffects(){

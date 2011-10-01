@@ -22,7 +22,7 @@ public class Map implements Defines {
 				lampTime = (float)(Math.random()%0.1f + 0.05f);
 			}
 			else{
-				lampTime = (float)(Math.random()%0.5f + 0.1f);
+				lampTime = (float)(Math.random()%1.0f + 0.1f);
 			}
 			lampOn = !lampOn;
 		}
