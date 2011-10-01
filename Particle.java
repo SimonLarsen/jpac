@@ -1,4 +1,4 @@
-abstract public class Particle implements Defines {
+public abstract class Particle implements Defines {
 	protected float x,y,z,frame;
 	protected int type;
 	public boolean alive;

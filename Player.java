@@ -2,6 +2,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import java.util.ArrayList;
 
+import static org.lwjgl.opengl.GL11.*;
+
 public class Player implements Defines {
 	public float x,y,z;
 	public float xdir,xdirdeg;
@@ -98,7 +100,7 @@ public class Player implements Defines {
 			float zdist = this.z - dots.get(i).z;
 			float dist = xdist*xdist + zdist*zdist;
 			if(dist < 0.1f){
-				if(dots.get(i).type == Pickup.PICKUP_BIG){
+				if(dots.get(i) instanceof BigDot){
 					ret = 1;
 					// TODO: Play bigdot sound
 				}

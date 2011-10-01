@@ -35,7 +35,7 @@ public class GhostDieParticle extends Particle {
 		glRotatef(dirdeg,0,1,0);
 		if(frame >= 5.f){
 			if(frame < 20.f){
-				float scale = 1.f - (20.f-(int)frame)/16.f;
+				float scale = 1.f - (20.f-(int)frame)/22.f;
 				glScalef(scale,1,scale);
 			}
 			glBegin(GL_QUADS);	

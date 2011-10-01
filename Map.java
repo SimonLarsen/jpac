@@ -51,16 +51,16 @@ public class Map implements Defines {
 						break;
 					case COL_LAMP:
 						data[ix+iy*w] = 2;
-						dots.add(new Pickup(ix+0.5f,iy+0.5f,Pickup.PICKUP_SMALL));
+						dots.add(new SmallDot(ix+0.5f,iy+0.5f));
 						break;
 					case COL_PORTAL:
 						data[ix+iy*w] = 3;
 						break;
 					case COL_SMALL:
-						dots.add(new Pickup(ix+0.5f,iy+0.5f,Pickup.PICKUP_SMALL));
+						dots.add(new SmallDot(ix+0.5f,iy+0.5f));
 						break;
 					case COL_BIG:
-						dots.add(new Pickup(ix+0.5f,iy+0.5f,Pickup.PICKUP_BIG));
+						dots.add(new BigDot(ix+0.5f,iy+0.5f));
 						break;
 					case COL_GHOST:
 						ghosts.add(new Ghost(ix,iy,ghostnum));
@@ -221,8 +221,8 @@ public class Map implements Defines {
 	private static final int COL_GHOST 	= 255 << 24 | 255 << 8 | 255;
 
 	// Tile data values
-	private static final int TILE_FLOOR 	= 0;
-	private static final int TILE_WALL 		= 1;
-	private static final int TILE_LAMP	 	= 2;
-	private static final int TILE_PORTAL 	= 3;
+	public static final int TILE_FLOOR 	= 0;
+	public static final int TILE_WALL 		= 1;
+	public static final int TILE_LAMP	 	= 2;
+	public static final int TILE_PORTAL 	= 3;
 }
