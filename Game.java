@@ -6,24 +6,26 @@ import org.lwjgl.util.glu.GLU;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.Sys;
+
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 public class Game implements Defines {
-	private boolean running;
+	private boolean running,paused;
 	private long lastUpdate;
 
-	public static Player pl;
-	public static Map map;
-	public static ArrayList<Pickup> dots;
-	public static ArrayList<Ghost> ghosts;
-	public static ArrayList<Particle> particles;
+	private static Player pl;
+	private static Map map;
+	private static ArrayList<Pickup> dots;
+	private static ArrayList<Ghost> ghosts;
+	private static ArrayList<Particle> particles;
 
 	/**
 	 * Main game loop.
 	 */
 	private void loop() throws Exception {
 		running = true;
+		paused = false;
 
 		dots = new ArrayList<Pickup>(32);
 		ghosts = new ArrayList<Ghost>(4);
@@ -39,48 +41,66 @@ public class Game implements Defines {
 		getDelta(); // To calibrate
 
 		while(running){
+			// Get delta time. Call even when paused to calibrate.
 			float dt = getDelta();
+			// Close window eh?	
 			if(Display.isCloseRequested()){
 				running = false;
 			}
+			// Poll key events
+			while(Keyboard.next()){
+				if(Keyboard.getEventKeyState()){ // Key pressed
+					int key = Keyboard.getEventKey();
+					if(key == Keyboard.KEY_P || key == Keyboard.KEY_ESCAPE){
+						paused = !paused;
+					}
+				}
+			}
+			// Don't update entities if paused
+			if(!paused){
+				pl.update(dt,map);
+				if(pl.collideDots(dots) == 1){
+					for(int i = 0; i < ghosts.size(); ++i){
+						ghosts.get(i).setScared();
+					}
+				}
+				pl.collideGhosts(ghosts);
+				map.update(dt);
 
-			pl.update(dt,map);
-			if(pl.collideDots(dots) == 1){
+				// Update ghosts
 				for(int i = 0; i < ghosts.size(); ++i){
-					ghosts.get(i).setScared();
+					Ghost g = ghosts.get(i);
+					if(g.alive){
+						g.update(dt,map);
+					}
+					else{
+						particles.add(new GhostDieParticle(g.x,g.z));
+						g.respawn();
+					}
 				}
-			}
-			pl.collideGhosts(ghosts);
-			map.update(dt);
-
-			// Update ghosts
-			for(int i = 0; i < ghosts.size(); ++i){
-				Ghost g = ghosts.get(i);
-				if(g.alive){
-					g.update(dt,map);
+				// Update particles
+				for(int i = particles.size()-1; i >= 0; --i){
+					if(particles.get(i).alive){
+						particles.get(i).update(dt);
+					}
+					else{
+						particles.remove(i);
+					}
 				}
-				else{
-					particles.add(new GhostDieParticle(g.x,g.z));
-					g.respawn();
-				}
-			}
-			// Update particles
-			for(int i = particles.size()-1; i >= 0; --i){
-				if(particles.get(i).alive){
-					particles.get(i).update(dt);
-				}
-				else{
-					particles.remove(i);
-				}
-			}
+			} // if(!paused)
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 			draw();
+			draw2D();
 
 			Display.update();
 		}
 	}
 
+	/**
+	 * Draw all 3D objects (walls, ghosts, dots...) to screen.
+	 */
 	private void draw(){
 		glLoadIdentity();
 
@@ -92,7 +112,7 @@ public class Game implements Defines {
 		glTranslatef(0,-pl.y,0);
 		// Draw shadow
 		glBegin(GL_QUADS);
-			glTexCoord2f(6.f/8.f,4.f/8.f); 	glVertex3f(-0.25f,0.02f,-0.25f);
+			glTexCoord2f(6.f/8.f,4.f/8.f); 		glVertex3f(-0.25f,0.02f,-0.25f);
 			glTexCoord2f(1.f, 4.f/8.f); 		glVertex3f(0.25f,0.02f,-0.25f);
 			glTexCoord2f(1.f, 6.f/8.f); 		glVertex3f(0.25f,0.02f,0.25f);
 			glTexCoord2f(6.f/8.f, 6.f/8.f); 	glVertex3f(-0.25f,0.02f,0.25f);
@@ -112,6 +132,48 @@ public class Game implements Defines {
 		for(int i = 0; i < particles.size(); ++i){
 			particles.get(i).draw(pl.xdirdeg);
 		}
+	}
+
+	/**
+	 * Draw all 2D stuff to screen
+	 */
+	private void draw2D(){
+		pushOrtho();
+		if(paused){
+			ResMgr.font.drawString(100,Defines.HEIGHT-100,"PAUSED");
+		}
+		popOrtho();
+	}
+
+	/**
+	 * Push current model view matrix to stack and switch
+	 * to orthogonal matrix for 2D drawing
+	 */
+	private void  pushOrtho(){
+		glEnable(GL_BLEND);
+		glDisable(GL_ALPHA_TEST);
+		glDisable(GL_DEPTH_TEST);
+
+		glPushMatrix();
+		glLoadIdentity();
+			glMatrixMode(GL_PROJECTION);
+			glPushMatrix();
+			glLoadIdentity();
+			glOrtho(0,Defines.WIDTH,Defines.HEIGHT,0,-1.f,1.f);
+	}
+
+	/**
+	 * Pops the old model view matrix.
+	 * Use to revert after calling pushOrtho().
+	 */
+	private void popOrtho(){
+			glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
+		glPopMatrix();
+
+		glDisable(GL_BLEND);
+		glEnable(GL_ALPHA_TEST);
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	/**
@@ -175,12 +237,12 @@ public class Game implements Defines {
 	 *
 	 * @throws Exception If init() fails
 	 */
-	public void start() throws Exception {
+	public void execute() throws Exception {
 		// Setup screen and OpenGL stuff
 		init();
 
 		// Load resources
-		ResMgr.loadTextures();
+		ResMgr.loadResources();
 
 		// Start game loop
 		loop();
@@ -192,7 +254,7 @@ public class Game implements Defines {
 	public static void main (String[] args){
 		Game game = new Game();
 		try{
-			game.start();
+			game.execute();
 		}
 		catch(Exception e){
 			e.printStackTrace();

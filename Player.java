@@ -2,8 +2,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import java.util.ArrayList;
 
-import static org.lwjgl.opengl.GL11.*;
-
 public class Player implements Defines {
 	public float x,y,z;
 	public float xdir,xdirdeg;
