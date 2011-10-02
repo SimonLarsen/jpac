@@ -89,7 +89,7 @@ public class Map implements Defines {
 			return false;
 	}
 
-	public void drawWalls(){
+	public void draw(){
 		glPushMatrix();
 
 		glColor4f(1.f,1.f,1.f,1.f);
@@ -193,15 +193,15 @@ public class Map implements Defines {
 			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.2f,0.f,0.8f);
 			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.2f,0.f,0.2f);
 
-			glTexCoord2f(1.f,0.f); 			glVertex3f(0.4f,1.f,0.f);
-			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.4f,1.f,1.f);
-			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.4f,0.f,1.f);
-			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.4f,0.f,0.f);
+			glTexCoord2f(1.f,0.f); 			glVertex3f(0.4f,1.f,0.1f);
+			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.4f,1.f,0.9f);
+			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.4f,0.f,0.9f);
+			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.4f,0.f,0.1f);
 
-			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.6f,1.f,0.f);
-			glTexCoord2f(1.f,0.f); 			glVertex3f(0.6f,1.f,1.f);
-			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.6f,0.f,1.f);
-			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.6f,0.f,0.f);
+			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.6f,1.f,0.1f);
+			glTexCoord2f(1.f,0.f); 			glVertex3f(0.6f,1.f,0.9f);
+			glTexCoord2f(1.f,0.25f); 		glVertex3f(0.6f,0.f,0.9f);
+			glTexCoord2f(0.75f,0.25f); 		glVertex3f(0.6f,0.f,0.1f);
 
 			glTexCoord2f(1.f,0.f); 			glVertex3f(0.8f,1.f,0.8f);
 			glTexCoord2f(0.75f,0.f); 		glVertex3f(0.8f,1.f,0.2f);

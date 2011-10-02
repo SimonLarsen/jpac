@@ -19,6 +19,7 @@ public class Game implements Defines {
 	private static ArrayList<Pickup> dots;
 	private static ArrayList<Ghost> ghosts;
 	private static ArrayList<Particle> particles;
+	private static ArrayList<ScreenEffect> effects;
 
 	/**
 	 * Main game loop.
@@ -30,6 +31,8 @@ public class Game implements Defines {
 		dots = new ArrayList<Pickup>(32);
 		ghosts = new ArrayList<Ghost>(4);
 		particles = new ArrayList<Particle>();
+		effects = new ArrayList<ScreenEffect>();
+		effects.add(new FadeEffect(FadeEffect.FADE_BLACK,FadeEffect.FADE_UP,2.f));
 
 		map = new Map();
 		map.loadFromImage("res/levels/1.png",dots,ghosts);
@@ -58,6 +61,7 @@ public class Game implements Defines {
 			}
 			// Don't update entities if paused
 			if(!paused){
+				// Update player
 				pl.update(dt,map);
 				if(pl.collideDots(dots) == 1){
 					for(int i = 0; i < ghosts.size(); ++i){
@@ -65,7 +69,20 @@ public class Game implements Defines {
 					}
 				}
 				pl.collideGhosts(ghosts);
+
+				// Update map
 				map.update(dt);
+
+				// Update screen effects
+				for(int i = effects.size()-1; i >= 0; --i){
+					if(effects.get(i).alive){
+						effects.get(i).update(dt);
+					}
+					else{
+						System.out.println("EHG");
+						effects.remove(i);
+					}
+				}
 
 				// Update ghosts
 				for(int i = 0; i < ghosts.size(); ++i){
@@ -108,6 +125,7 @@ public class Game implements Defines {
 		glRotatef(pl.xdirdeg,0,1,0);
 
 		ResMgr.tiles.bind();
+		glColor4f(1.f,1.f,1.f,1.f);
 
 		glTranslatef(0,-pl.y,0);
 		// Draw shadow
@@ -119,18 +137,18 @@ public class Game implements Defines {
 		glEnd();
 		glTranslatef(-pl.x,0,-pl.z);
 		
-		map.drawWalls();
+		map.draw();
 
 		ResMgr.sprites.bind();
 
-		for(int i = 0; i < dots.size(); ++i) {
-			dots.get(i).draw(pl.xdirdeg);
+		for(Pickup p : dots){
+			p.draw(pl.xdirdeg);
 		}
-		for(int i = 0; i < ghosts.size(); ++i){
-			ghosts.get(i).draw(pl.xdirdeg);
+		for(Ghost g : ghosts){
+			g.draw(pl.xdirdeg);
 		}
-		for(int i = 0; i < particles.size(); ++i){
-			particles.get(i).draw(pl.xdirdeg);
+		for(Particle p : particles){
+			p.draw(pl.xdirdeg);
 		}
 	}
 
@@ -141,6 +159,9 @@ public class Game implements Defines {
 		pushOrtho();
 		if(paused){
 			ResMgr.font.drawString(100,Defines.HEIGHT-100,"PAUSED");
+		}
+		for(ScreenEffect se : effects){
+			se.draw();
 		}
 		popOrtho();
 	}

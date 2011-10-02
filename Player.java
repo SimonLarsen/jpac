@@ -15,7 +15,9 @@ public class Player implements Defines {
 		x = 0.f;
 		y = 0.6f;
 		z = 0.f;
-		xdir = xdirdeg = 0.f;
+		//xdir = xdirdeg = 0.f;
+		xdir = -(float)Math.PI/2.f;
+		xdirdeg = xdir * RADDEG;
 		ydir = ydirdeg = 0.f;
 		bop = 0.f;
 	}
@@ -75,8 +77,8 @@ public class Player implements Defines {
 					z = nz;
 				}
 				// Wrap if through portal
-				if(x < 0.3f){ x = map.w-0.5f; }
-				else if(x > map.w-0.3f){ x = 0.5f; }
+				if(x < 0.4f){ x = map.w-0.5f; }
+				else if(x > map.w-0.4f){ x = 0.5f; }
 			}
 		}
 		// Dying/dead
