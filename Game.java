@@ -124,19 +124,20 @@ public class Game implements Defines {
 		glRotatef(pl.ydirdeg,1,0,0);
 		glRotatef(pl.xdirdeg,0,1,0);
 
-		ResMgr.tiles.bind();
 		glColor4f(1.f,1.f,1.f,1.f);
 
+		ResMgr.sprites.bind();
 		glTranslatef(0,-pl.y,0);
 		// Draw shadow
 		glBegin(GL_QUADS);
-			glTexCoord2f(6.f/8.f,4.f/8.f); 		glVertex3f(-0.25f,0.02f,-0.25f);
-			glTexCoord2f(1.f, 4.f/8.f); 		glVertex3f(0.25f,0.02f,-0.25f);
-			glTexCoord2f(1.f, 6.f/8.f); 		glVertex3f(0.25f,0.02f,0.25f);
-			glTexCoord2f(6.f/8.f, 6.f/8.f); 	glVertex3f(-0.25f,0.02f,0.25f);
+			glTexCoord2f(0.f,6.f/8.f); 			glVertex3f(-0.25f,0.02f,-0.25f);
+			glTexCoord2f(2.f/8.f, 6.f/8.f); 	glVertex3f(0.25f,0.02f,-0.25f);
+			glTexCoord2f(2.f/8.f, 8.f/8.f); 	glVertex3f(0.25f,0.02f,0.25f);
+			glTexCoord2f(0.f, 8.f/8.f); 		glVertex3f(-0.25f,0.02f,0.25f);
 		glEnd();
 		glTranslatef(-pl.x,0,-pl.z);
 		
+		ResMgr.tiles.bind();
 		map.draw();
 
 		ResMgr.sprites.bind();
