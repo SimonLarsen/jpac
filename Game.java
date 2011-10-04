@@ -21,6 +21,8 @@ public class Game implements Defines {
 	private static ArrayList<Particle> particles;
 	private static ArrayList<ScreenEffect> effects;
 
+	public static int nextLevel;
+
 	/**
 	 * Main game loop.
 	 */
@@ -34,8 +36,8 @@ public class Game implements Defines {
 		effects = new ArrayList<ScreenEffect>();
 		effects.add(new FadeEffect(FadeEffect.FADE_BLACK,FadeEffect.FADE_UP,2.f));
 
-		map = new Map();
-		map.loadFromImage("res/levels/1.png",dots,ghosts);
+		map = Map.create(nextLevel);
+		map.load(dots,ghosts);
 
 		pl = new Player();
 		pl.x = map.startx;
@@ -59,7 +61,7 @@ public class Game implements Defines {
 					}
 				}
 			}
-			// Don't update entities if paused
+			// Don't update if paused
 			if(!paused){
 				// Update player
 				pl.update(dt,map);
@@ -79,7 +81,6 @@ public class Game implements Defines {
 						effects.get(i).update(dt);
 					}
 					else{
-						System.out.println("EHG");
 						effects.remove(i);
 					}
 				}
@@ -120,7 +121,6 @@ public class Game implements Defines {
 	 */
 	private void draw(){
 		glLoadIdentity();
-
 		glRotatef(pl.ydirdeg,1,0,0);
 		glRotatef(pl.xdirdeg,0,1,0);
 
@@ -137,7 +137,6 @@ public class Game implements Defines {
 		glEnd();
 		glTranslatef(-pl.x,0,-pl.z);
 		
-		ResMgr.tiles.bind();
 		map.draw();
 
 		ResMgr.sprites.bind();
@@ -216,29 +215,37 @@ public class Game implements Defines {
 	 * @throws LWJGLException if display couldn't be created.
 	 */
 	private void init() throws Exception {
+		// Create display
 		Display.setDisplayMode(new DisplayMode(WIDTH,HEIGHT));
 		Display.create();
+
 		// Setup view matrix
 		glViewport(0,0,WIDTH,HEIGHT);
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		GLU.gluPerspective(80.f,(float)WIDTH/(float)HEIGHT,0.01f,100.f);
 		glMatrixMode(GL_MODELVIEW);
+
 		glLoadIdentity();
 		// Background color
 		glClearColor(0.f,0.f,0.f,0.f);
+
 		// Depth buffer/testing
 		glClearDepth(1.f);
 		glDepthFunc(GL_LEQUAL);
 		glEnable(GL_DEPTH_TEST);
+
 		// Enable textures
 		glEnable(GL_TEXTURE_2D);
+		
 		// Setup blending (only used for screen effect as of now)
 		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 		glDisable(GL_BLEND);
+
 		// Use alpha test, for billboard sprites with transparency
 		glAlphaFunc(GL_GREATER,0.9f);
 		glEnable(GL_ALPHA_TEST);
+
 		// Setup fog
 		FloatBuffer fogColor = org.lwjgl.BufferUtils.createFloatBuffer(4).put(new float[]
 			{0.f,0.f,0.f,1.f}); fogColor.flip();
@@ -250,6 +257,9 @@ public class Game implements Defines {
 		glFogf(GL_FOG_END, 6.0f);
 		glEnable(GL_FOG);
 		Mouse.setGrabbed(true);
+
+		// Setup game variables
+		nextLevel = 1;
 	}
 
 	/**
