@@ -4,28 +4,37 @@ import java.awt.image.ColorModel;
 import java.util.ArrayList;
 import org.newdawn.slick.util.ResourceLoader;
 
-public abstract class Map implements Defines {
+public class Map implements Defines {
 	public int w,h,numDots,numBigDots;
 	public float startx,startz;
 	public char[] data;
 	protected float lampTime,particleTime;
 	protected boolean lampOn;
-	protected int level;
 
-	public static Map create(int number){
-		Map map;
-		switch(number){
-			default:
-			case 0: map = new Map0(); break;
-			case 1: map = new Map1(); break;
+	public void draw(){
+		ResMgr.tiles[0].bind();
+		glPushMatrix();
+
+		glColor4f(1.f,1.f,1.f,1.f);
+		for(int iy = 0; iy < h; ++iy){
+			for(int ix = 0; ix < w; ++ix){
+				char tile = data[ix+iy*w];
+				switch(tile){
+					case TILE_FLOOR:
+						drawFloor(); break;
+					case TILE_WALL:
+						drawWall(); break;
+					case TILE_LAMP:
+						drawLamp(); break;
+					case TILE_PORTAL:
+						drawPortal(); break;
+					default:
+				}
+				glTranslatef(1,0,0);
+			}
+			glTranslatef(-w,0,1);
 		}
-		return map;
-	}
-
-	public void load(ArrayList<Pickup> dots, ArrayList<Ghost> ghosts) throws Exception {
-		dots.clear();
-		ghosts.clear();
-		loadLevel(level,dots,ghosts);
+		glPopMatrix();
 	}
 
 	public void update(float dt){
@@ -43,9 +52,12 @@ public abstract class Map implements Defines {
 		particleTime = (particleTime+dt)%1.f;
 	}
 
-	protected void loadLevel(int level, ArrayList<Pickup> dots, ArrayList<Ghost> ghosts) throws Exception {
+	protected void load(int level, ArrayList<Pickup> dots, ArrayList<Ghost> ghosts, ArrayList<Event> events) throws Exception {
 		BufferedImage img = ResMgr.levels[level];
-		//BufferedImage img = ImageIO.read(ResourceLoader.getResourceAsStream(filename));
+		dots.clear();
+		ghosts.clear();
+		events.clear();
+		events.add(new JumpEvent(9,20,1,1,0,-4));
 
 		w = img.getWidth();
 		h = img.getHeight();
@@ -83,8 +95,6 @@ public abstract class Map implements Defines {
 			}
 		}
 	}
-
-	public abstract void draw();
 
 	public boolean canMove(float x, float y){
 		return canMove((int)x,(int)y);

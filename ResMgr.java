@@ -22,7 +22,7 @@ public class ResMgr implements Defines {
 
 		tiles = new Texture[NUM_TILEMAPS];
 		for(int i = 0; i < NUM_TILEMAPS; ++i){
-			tiles[i] = TextureLoader.getTexture("PNG",ResourceLoader.getResourceAsStream("res/tiles/"+1+".png"),GL11.GL_NEAREST);
+			tiles[i] = TextureLoader.getTexture("PNG",ResourceLoader.getResourceAsStream("res/tiles/"+i+".png"),GL11.GL_NEAREST);
 		}
 
 		levels = new BufferedImage[NUM_LEVELS];

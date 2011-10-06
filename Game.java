@@ -20,6 +20,7 @@ public class Game implements Defines {
 	private static ArrayList<Ghost> ghosts;
 	private static ArrayList<Particle> particles;
 	private static ArrayList<ScreenEffect> effects;
+	private static ArrayList<Event> events;
 
 	public static int nextLevel;
 
@@ -29,16 +30,11 @@ public class Game implements Defines {
 	private void loop() throws Exception {
 		running = true;
 		paused = false;
-
-		dots = new ArrayList<Pickup>(32);
-		ghosts = new ArrayList<Ghost>(4);
-		particles = new ArrayList<Particle>();
-		effects = new ArrayList<ScreenEffect>();
 		effects.add(new FadeEffect(FadeEffect.FADE_BLACK,FadeEffect.FADE_UP,2.f));
 
-		map = Map.create(nextLevel);
-		map.load(dots,ghosts);
+		map.load(0,dots,ghosts,events);
 
+		// TODO Replace with respawn method, don't create new player
 		pl = new Player();
 		pl.x = map.startx;
 		pl.z = map.startz;
@@ -71,6 +67,16 @@ public class Game implements Defines {
 					}
 				}
 				pl.collideGhosts(ghosts);
+
+				// Update events
+				for(int i = events.size()-1; i >= 0; --i){
+					if(events.get(i).status == Event.STATUS_DEAD){
+						events.remove(i);
+					}
+					else{
+						events.get(i).update(dt,pl,map,ghosts);
+					}
+				}
 
 				// Update map
 				map.update(dt);
@@ -259,7 +265,14 @@ public class Game implements Defines {
 		Mouse.setGrabbed(true);
 
 		// Setup game variables
+		// and create objects
 		nextLevel = 1;
+		map = new Map();
+		dots = new ArrayList<Pickup>(32);
+		ghosts = new ArrayList<Ghost>(4);
+		particles = new ArrayList<Particle>();
+		effects = new ArrayList<ScreenEffect>();
+		events = new ArrayList<Event>();
 	}
 
 	/**
