@@ -19,4 +19,4 @@ public class JumpEvent extends Event {
 	public void draw(){
 
 	}
-}	
+}

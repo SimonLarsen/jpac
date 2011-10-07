@@ -2,17 +2,19 @@ import static org.lwjgl.opengl.GL11.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.util.ArrayList;
+import java.util.Scanner;
 import org.newdawn.slick.util.ResourceLoader;
 
 public class Map implements Defines {
 	public int w,h,numDots,numBigDots;
+	public int tileset;
 	public float startx,startz;
 	public char[] data;
 	protected float lampTime,particleTime;
 	protected boolean lampOn;
 
 	public void draw(){
-		ResMgr.tiles[0].bind();
+		ResMgr.tiles[tileset].bind();
 		glPushMatrix();
 
 		glColor4f(1.f,1.f,1.f,1.f);
@@ -53,11 +55,11 @@ public class Map implements Defines {
 	}
 
 	protected void load(int level, ArrayList<Pickup> dots, ArrayList<Ghost> ghosts, ArrayList<Event> events) throws Exception {
+		this.tileset = 0; // Default to tileset 0
 		BufferedImage img = ResMgr.levels[level];
 		dots.clear();
 		ghosts.clear();
 		events.clear();
-		events.add(new JumpEvent(9,20,1,1,0,-4));
 
 		w = img.getWidth();
 		h = img.getHeight();
@@ -92,6 +94,36 @@ public class Map implements Defines {
 						break;
 					default:
 				}
+			}
+		}
+
+		readConfig(level,events);
+	}
+
+	protected void readConfig(int level, ArrayList<Event> events){
+		Scanner sc = new Scanner(ResourceLoader.getResourceAsStream("res/levels/"+level+".cfg"));
+		while(sc.hasNextLine()){
+			String[] line = sc.nextLine().split(",");
+			try{
+				float[] arg = new float[line.length-1];
+				for(int i = 1; i < line.length; ++i){
+					arg[i-1] = Float.parseFloat(line[i]);
+				}
+
+				// Tileset setting
+				if(line[0].equals("tile")){
+					tileset = (int)arg[1];
+				}
+				// Add JumpEvent
+				else if(line[0].equals("jmp")){
+					events.add(new JumpEvent(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5]));
+				}
+			} catch (Exception e){
+				System.out.print("Error parsing event:\n\t");
+				for(int i = 0; i < line.length; ++i){
+					System.out.print(line[i] + " ");
+				}
+				System.out.println();
 			}
 		}
 	}

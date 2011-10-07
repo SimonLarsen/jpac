@@ -22,17 +22,18 @@ public class Game implements Defines {
 	private static ArrayList<ScreenEffect> effects;
 	private static ArrayList<Event> events;
 
-	public static int nextLevel;
+	public static int state, level;
 
 	/**
 	 * Main game loop.
 	 */
 	private void loop() throws Exception {
 		running = true;
+		float clearWait = CLEARWAIT_TIME;
 		paused = false;
-		effects.add(new FadeEffect(FadeEffect.FADE_BLACK,FadeEffect.FADE_UP,2.f));
+		effects.add(new FadeEffect(FadeEffect.FADE_WHITE,FadeEffect.FADE_UP,2.f*CLEARWAIT_TIME));
 
-		map.load(0,dots,ghosts,events);
+		map.load(level,dots,ghosts,events);
 
 		// TODO Replace with respawn method, don't create new player
 		pl = new Player();
@@ -47,6 +48,7 @@ public class Game implements Defines {
 			// Close window eh?	
 			if(Display.isCloseRequested()){
 				running = false;
+				state = STATE_QUIT;
 			}
 			// Poll key events
 			while(Keyboard.next()){
@@ -110,6 +112,18 @@ public class Game implements Defines {
 					else{
 						particles.remove(i);
 					}
+				}
+
+				// Check if all dots have been eaten
+				if(dots.size() == 0){
+					if(clearWait == CLEARWAIT_TIME){
+						effects.add(new FadeEffect(FadeEffect.FADE_WHITE,FadeEffect.FADE_DOWN,clearWait));
+					}
+					else if(clearWait <= 0.f){
+						running = false;
+						level++;
+					}
+					clearWait -= dt;
 				}
 			} // if(!paused)
 
@@ -266,7 +280,6 @@ public class Game implements Defines {
 
 		// Setup game variables
 		// and create objects
-		nextLevel = 1;
 		map = new Map();
 		dots = new ArrayList<Pickup>(32);
 		ghosts = new ArrayList<Ghost>(4);
@@ -290,7 +303,13 @@ public class Game implements Defines {
 		ResMgr.loadResources();
 
 		// Start game loop
-		loop();
+		level = 2;
+		state = STATE_GAME;
+		while(state != STATE_QUIT){
+			switch(state){
+				case STATE_GAME: loop(); break;
+			}
+		}
 
 		// Destroy display before returning
 		Display.destroy();
@@ -305,4 +324,10 @@ public class Game implements Defines {
 			e.printStackTrace();
 		}
 	}
+
+	public static final float CLEARWAIT_TIME = 0.8f;
+
+	public static final int STATE_GAME	= 0;
+	public static final int STATE_MENU 	= 1;
+	public static final int STATE_QUIT	= 2;
 }

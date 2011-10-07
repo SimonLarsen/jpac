@@ -15,9 +15,7 @@ public class Player implements Defines {
 		x = 0.f;
 		y = 0.6f;
 		z = 0.f;
-		//xdir = xdirdeg = 0.f;
-		xdir = -(float)Math.PI/2.f;
-		xdirdeg = xdir * RADDEG;
+		xdir = xdirdeg = 0.f;
 		ydir = ydirdeg = 0.f;
 		bop = 0.f;
 	}

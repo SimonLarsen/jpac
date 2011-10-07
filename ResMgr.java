@@ -40,6 +40,6 @@ public class ResMgr implements Defines {
 		font = new TrueTypeFont(awtFont,false);
 	}
 
-	private static final int NUM_TILEMAPS = 2;
-	private static final int NUM_LEVELS = 1;
+	private static final int NUM_TILEMAPS = 3;
+	private static final int NUM_LEVELS = 3;
 }
