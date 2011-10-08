@@ -31,8 +31,12 @@ public class Game implements Defines {
 		running = true;
 		float clearWait = CLEARWAIT_TIME;
 		paused = false;
-		effects.add(new FadeEffect(FadeEffect.FADE_WHITE,FadeEffect.FADE_UP,2.f*CLEARWAIT_TIME));
+		effects.add(new FadeEffect(FadeEffect.FADE_WHITE,FadeEffect.FADE_UP,2.0f*CLEARWAIT_TIME));
 
+		dots.clear();
+		ghosts.clear();
+		events.clear();
+		particles.clear();
 		map.load(level,dots,ghosts,events);
 
 		// TODO Replace with respawn method, don't create new player
@@ -252,7 +256,7 @@ public class Game implements Defines {
 
 		// Depth buffer/testing
 		glClearDepth(1.f);
-		glDepthFunc(GL_LEQUAL);
+		glDepthFunc(GL_LESS);
 		glEnable(GL_DEPTH_TEST);
 
 		// Enable textures
@@ -303,7 +307,7 @@ public class Game implements Defines {
 		ResMgr.loadResources();
 
 		// Start game loop
-		level = 2;
+		level = 1;
 		state = STATE_GAME;
 		while(state != STATE_QUIT){
 			switch(state){
@@ -325,7 +329,7 @@ public class Game implements Defines {
 		}
 	}
 
-	public static final float CLEARWAIT_TIME = 0.8f;
+	public static final float CLEARWAIT_TIME = 1.0f;
 
 	public static final int STATE_GAME	= 0;
 	public static final int STATE_MENU 	= 1;

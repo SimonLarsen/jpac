@@ -10,12 +10,17 @@ import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
+import org.newdawn.slick.openal.Audio;
+import org.newdawn.slick.openal.AudioLoader;
+import org.newdawn.slick.openal.SoundStore;
 
 public class ResMgr implements Defines {
-	static public Texture[] tiles;
-	static public Texture sprites;
-	static public BufferedImage[] levels;
+	public static Texture[] tiles;
+	public static Texture sprites;
+	public static BufferedImage[] levels;
+	public static Audio sndBGM;
 	public static TrueTypeFont font;
+
 
 	public static void loadTextures() throws Exception {
 		sprites = TextureLoader.getTexture("PNG",ResourceLoader.getResourceAsStream("res/sprites.png"),GL11.GL_NEAREST);
@@ -31,8 +36,14 @@ public class ResMgr implements Defines {
 		}
 	}
 
+	public static void loadSounds() throws Exception {
+		sndBGM = AudioLoader.getAudio("OGG",ResourceLoader.getResourceAsStream("res/ambient.ogg"));
+		sndBGM.playAsMusic(1.f,1.f,true);
+	}
+
 	public static void loadResources() throws Exception {
 		loadTextures();
+		loadSounds();
 
 		InputStream is = ResourceLoader.getResourceAsStream("res/font.ttf");
 		Font awtFont = Font.createFont(Font.TRUETYPE_FONT,is);

@@ -23,11 +23,15 @@ public class Map implements Defines {
 				char tile = data[ix+iy*w];
 				switch(tile){
 					case TILE_FLOOR:
-						drawFloor(); break;
+						drawFloor();
+						drawUnderNoise();
+						break;
 					case TILE_WALL:
 						drawWall(); break;
 					case TILE_LAMP:
-						drawLamp(); break;
+						drawLamp();
+						drawUnderNoise();
+						break;
 					case TILE_PORTAL:
 						drawPortal(); break;
 					default:
@@ -57,9 +61,6 @@ public class Map implements Defines {
 	protected void load(int level, ArrayList<Pickup> dots, ArrayList<Ghost> ghosts, ArrayList<Event> events) throws Exception {
 		this.tileset = 0; // Default to tileset 0
 		BufferedImage img = ResMgr.levels[level];
-		dots.clear();
-		ghosts.clear();
-		events.clear();
 
 		w = img.getWidth();
 		h = img.getHeight();
@@ -117,6 +118,9 @@ public class Map implements Defines {
 				// Add JumpEvent
 				else if(line[0].equals("jmp")){
 					events.add(new JumpEvent(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5]));
+				}
+				else if(line[0].equals("esp")){
+					events.add(new EnemySpawnEvent(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5]));
 				}
 			} catch (Exception e){
 				System.out.print("Error parsing event:\n\t");
@@ -184,6 +188,15 @@ public class Map implements Defines {
 			glTexCoord2f(0.75f,0.f); 		glVertex3f(1.f,1.f,0.f);
 			glTexCoord2f(0.75f,0.25f); 		glVertex3f(1.f,1.f,1.f);
 			glTexCoord2f(0.5f,0.25f); 		glVertex3f(0.f,1.f,1.f);
+		glEnd();
+	}
+
+	protected void drawUnderNoise(){
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.25f,0.5f); 		glVertex3f(0.f,-0.3f,0.f);
+			glTexCoord2f(0.5f,0.5f); 		glVertex3f(1.f,-0.3f,0.f);
+			glTexCoord2f(0.5f,0.75f); 		glVertex3f(1.f,-0.3f,1.f);
+			glTexCoord2f(0.25f,0.75f); 		glVertex3f(0.f,-0.3f,1.f);
 		glEnd();
 	}
 
