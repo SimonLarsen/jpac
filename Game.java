@@ -39,10 +39,8 @@ public class Game implements Defines {
 		particles.clear();
 		map.load(level,dots,ghosts,events);
 
-		// TODO Replace with respawn method, don't create new player
 		pl = new Player();
-		pl.x = map.startx;
-		pl.z = map.startz;
+		pl.respawn(map.startx, map.startz);
 
 		getDelta(); // To calibrate
 
@@ -173,6 +171,9 @@ public class Game implements Defines {
 		}
 		for(Particle p : particles){
 			p.draw(pl.xdirdeg);
+		}
+		for(Event e : events){
+			e.draw(pl.xdirdeg);
 		}
 	}
 

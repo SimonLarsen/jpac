@@ -119,8 +119,13 @@ public class Map implements Defines {
 				else if(line[0].equals("jmp")){
 					events.add(new JumpEvent(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5]));
 				}
+				// Add EnemySpawnEvent
 				else if(line[0].equals("esp")){
 					events.add(new EnemySpawnEvent(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5]));
+				}
+				// Add DrawEnemyEvent
+				else if(line[0].equals("dee")){
+					events.add(new DrawEnemyEvent(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],(int)arg[6],arg[7]));
 				}
 			} catch (Exception e){
 				System.out.print("Error parsing event:\n\t");

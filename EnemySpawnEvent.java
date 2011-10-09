@@ -16,6 +16,6 @@ public class EnemySpawnEvent extends Event {
 		}
 	}
 
-	public void draw(){
+	public void draw(float dirdeg){
 	}
 }

@@ -91,6 +91,11 @@ public class Player implements Defines {
 		}
 	}
 
+	public void respawn(float startx, float startz){
+		x = startx;
+		z = startz;
+	}
+
 	public int collideDots(ArrayList<Pickup> dots){
 		int ret = 0;
 		for(int i = dots.size()-1; i >= 0; --i){

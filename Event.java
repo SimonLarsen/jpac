@@ -23,7 +23,7 @@ public abstract class Event {
 
 	public abstract void update(float dt, Player pl, Map map, ArrayList<Ghost> ghosts);
 
-	public abstract void draw();
+	public abstract void draw(float dirdeg);
 
 	public static final int STATUS_IDLE 	= 0;
 	public static final int STATUS_ACTIVE 	= 1;

@@ -123,6 +123,6 @@ public class Ghost implements Defines {
 		return nz;
 	}
 
-	private static final float MOVESPEED = 2.0f;
-	private static final float SCAREDSPEED = 1.25f;
+	public static final float MOVESPEED = 2.0f;
+	public static final float SCAREDSPEED = 1.25f;
 }

@@ -16,7 +16,7 @@ public class JumpEvent extends Event {
 		}
 	}
 
-	public void draw(){
+	public void draw(float dirdeg){
 
 	}
 }
