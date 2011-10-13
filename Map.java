@@ -28,6 +28,10 @@ public class Map implements Defines {
 						break;
 					case TILE_WALL:
 						drawWall(); break;
+					case TILE_GHOSTWALL:
+						drawGhostWall();
+						drawFloor();
+						break;
 					case TILE_LAMP:
 						drawLamp();
 						drawUnderNoise();
@@ -93,6 +97,9 @@ public class Map implements Defines {
 						ghosts.add(new Ghost(ix,iy,ghostnum));
 						ghostnum = (ghostnum+1)%4;
 						break;
+					case COL_GHOSTWALL:
+						data[ix+iy*w] = TILE_GHOSTWALL;
+						break;
 					default:
 				}
 			}
@@ -143,6 +150,13 @@ public class Map implements Defines {
 
 	public boolean canMove(int x, int y){
 		if(data[x+y*w] < 0x10)
+			return true;
+		else
+			return false;
+	}
+
+	public boolean canMoveGhost(int x, int y){
+		if(data[x+y*w] < 0x11)
 			return true;
 		else
 			return false;
@@ -229,6 +243,30 @@ public class Map implements Defines {
 		glEnd();
 	}
 
+	protected void drawGhostWall(){
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.5f,0.5f); 		glVertex3f(1.f,1.f,0.f);
+			glTexCoord2f(0.75f,0.5f); 		glVertex3f(0.f,1.f,0.f);
+			glTexCoord2f(0.75f,0.75f); 		glVertex3f(0.f,0.f,0.f);
+			glTexCoord2f(0.5f,0.75f); 		glVertex3f(1.f,0.f,0.f);
+
+			glTexCoord2f(0.5f,0.5f); 		glVertex3f(0.f,1.f,0.f);
+			glTexCoord2f(0.75f,0.5f); 		glVertex3f(0.f,1.f,1.f);
+			glTexCoord2f(0.75f,0.75f); 		glVertex3f(0.f,0.f,1.f);
+			glTexCoord2f(0.5f,0.75f); 		glVertex3f(0.f,0.f,0.f);
+
+			glTexCoord2f(0.5f,0.5f); 		glVertex3f(1.f,1.f,1.f);
+			glTexCoord2f(0.75f,0.5f); 		glVertex3f(1.f,1.f,0.f);
+			glTexCoord2f(0.75f,0.75f); 		glVertex3f(1.f,0.f,0.f);
+			glTexCoord2f(0.5f,0.75f); 		glVertex3f(1.f,0.f,1.f);
+
+			glTexCoord2f(0.5f,0.5f); 		glVertex3f(0.f,1.f,1.f);
+			glTexCoord2f(0.75f,0.5f); 		glVertex3f(1.f,1.f,1.f);
+			glTexCoord2f(0.75f,0.75f); 		glVertex3f(1.f,0.f,1.f);
+			glTexCoord2f(0.5f,0.75f); 		glVertex3f(0.f,0.f,1.f);
+		glEnd();
+	}
+
 	protected void drawPendant(){
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.f,0.5f); 		glVertex3f(1.f,0.f,0.f);
@@ -305,10 +343,12 @@ public class Map implements Defines {
 	protected static final int COL_SMALL  	= 255 << 24 | 255 << 16 | 255 << 8 | 255;
 	protected static final int COL_BIG 		= 255 << 24 | 255 << 8;
 	protected static final int COL_GHOST 	= 255 << 24 | 255 << 8 | 255;
+	protected static final int COL_GHOSTWALL = 255 << 24 | 255 << 16 | 128 << 8;
 
 	// Tile data values
 	public static final int TILE_FLOOR 		= 0;
-	public static final int TILE_WALL 		= 0x10;
+	public static final int TILE_WALL 		= 0x11;
+	public static final int TILE_GHOSTWALL	= 0x10;
 	public static final int TILE_LAMP	 	= 2;
 	public static final int TILE_PORTAL 	= 3;
 }

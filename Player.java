@@ -50,9 +50,9 @@ public class Player implements Defines {
 			}
 			
 			// Check mouse movement
-			xdir += (float)Mouse.getDX()*dt;
+			xdir += (float)(Mouse.getDX()*dt)/10.f;
 			xdirdeg = xdir * RADDEG;
-			ydir -= (float)Mouse.getDY()*dt;
+			ydir -= (float)(Mouse.getDY()*dt)/10.f;
 			if(ydir < -Math.PI/2.f){ ydir = (float)-Math.PI/2.f; }
 			else if(ydir > Math.PI/2.f){ ydir = (float)Math.PI/2.f; }
 			ydirdeg = ydir * RADDEG;

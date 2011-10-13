@@ -11,7 +11,7 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 public class Game implements Defines {
-	private boolean running,paused;
+	private boolean paused, running;
 	private long lastUpdate;
 
 	private static Player pl;
@@ -28,6 +28,7 @@ public class Game implements Defines {
 	 * Main game loop.
 	 */
 	private void loop() throws Exception {
+		Mouse.setGrabbed(true);
 		running = true;
 		float clearWait = CLEARWAIT_TIME;
 		paused = false;
@@ -58,6 +59,11 @@ public class Game implements Defines {
 					int key = Keyboard.getEventKey();
 					if(key == Keyboard.KEY_P || key == Keyboard.KEY_ESCAPE){
 						paused = !paused;
+						Mouse.setGrabbed(!paused);
+					}
+					else if(key == Keyboard.KEY_Q && paused){
+						running = false;
+						state = STATE_MENU;
 					}
 				}
 			}
@@ -135,6 +141,81 @@ public class Game implements Defines {
 			draw2D();
 
 			Display.update();
+			Display.sync(60);
+		}
+	}
+
+	/**
+	 * Main menu loop
+	 */
+	private void menuLoop() throws Exception {
+		Mouse.setGrabbed(false);
+		dots.clear();
+		ghosts.clear();
+		events.clear();
+		particles.clear();
+		map.load(0,dots,ghosts,events);
+
+		int selection = 0;
+		boolean[] hover = new boolean[3];
+		while(state == STATE_MENU){
+			float dt = getDelta();
+			if(Display.isCloseRequested()){
+				state = STATE_QUIT;
+			}
+			while(Keyboard.next()){
+				if(Keyboard.getEventKeyState()){ // Key pressed
+					int key = Keyboard.getEventKey();
+					if(key == Keyboard.KEY_ESCAPE){
+						state = STATE_QUIT;
+					}
+				}
+			}
+			
+			map.update(dt);
+
+			int mx = Mouse.getX();
+			int my = Mouse.getY();
+			hover[0] = (my > 328 && my < 365 && mx > 225 && mx < 800-225);
+			hover[1] = (my > 253 && my < 290 && mx > 225 && mx < 800-225);
+			hover[2] = (my > 178 && my < 215 && mx > 225 && mx < 800-225);
+
+			if(Mouse.isButtonDown(0)){
+				if(hover[0]){ state = STATE_GAME; }
+				if(hover[2]){ state = STATE_QUIT; }
+			}
+
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glLoadIdentity();
+
+			glTranslatef(-4.5f,-0.6f,-15.5f);
+			map.draw();
+
+			pushOrtho();
+
+			int xoff = 3 - (int)Math.floor(Math.random()*7.0);
+			int yoff = 3 - (int)Math.floor(Math.random()*7.0);
+			if(hover[0]){
+				ResMgr.font.drawString((Defines.WIDTH-ResMgr.font.getWidth("START GAME"))/2+xoff,230+yoff,"START GAME");
+			} else {
+				ResMgr.font.drawString((Defines.WIDTH-ResMgr.font.getWidth("START GAME"))/2,230,"START GAME");
+			}
+
+			if(hover[1]){
+				ResMgr.font.drawString((Defines.WIDTH-ResMgr.font.getWidth("CREDITS"))/2+xoff,305+yoff,"CREDITS");
+			} else {
+				ResMgr.font.drawString((Defines.WIDTH-ResMgr.font.getWidth("CREDITS"))/2,305,"CREDITS");
+			}
+
+			if(hover[2]){
+				ResMgr.font.drawString((Defines.WIDTH-ResMgr.font.getWidth("QUIT"))/2+xoff,380+yoff,"QUIT");
+			} else {
+				ResMgr.font.drawString((Defines.WIDTH-ResMgr.font.getWidth("QUIT"))/2,380,"QUIT");
+			}
+
+			popOrtho();
+			Display.update();
+			Display.sync(60);
 		}
 	}
 
@@ -281,7 +362,6 @@ public class Game implements Defines {
 		glFogf(GL_FOG_START, 0.5f);
 		glFogf(GL_FOG_END, 6.0f);
 		glEnable(GL_FOG);
-		Mouse.setGrabbed(true);
 
 		// Setup game variables
 		// and create objects
@@ -308,11 +388,13 @@ public class Game implements Defines {
 		ResMgr.loadResources();
 
 		// Start game loop
-		level = 1;
-		state = STATE_GAME;
+		level = 0;
+		state = STATE_MENU;
 		while(state != STATE_QUIT){
 			switch(state){
 				case STATE_GAME: loop(); break;
+				case STATE_MENU: menuLoop(); break;
+				default: state = STATE_QUIT; break;
 			}
 		}
 

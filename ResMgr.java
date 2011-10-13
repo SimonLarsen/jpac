@@ -52,5 +52,5 @@ public class ResMgr implements Defines {
 	}
 
 	private static final int NUM_TILEMAPS = 3;
-	private static final int NUM_LEVELS = 3;
+	private static final int NUM_LEVELS = 4;
 }

@@ -54,7 +54,7 @@ public class Ghost implements Defines {
 			z = (float)Math.floor(z)+0.5f;
 
 			int badDir;
-			if(map.canMove(xmask((int)x,dir),zmask((int)z,dir))){
+			if(map.canMoveGhost(xmask((int)x,dir),zmask((int)z,dir))){
 				badDir = (dir+2)%4;
 			}
 			else{
@@ -64,7 +64,7 @@ public class Ghost implements Defines {
 			//dir = rand() % 4;
 			dir = (int)(Math.random() * Integer.MAX_VALUE) % 4;
 			for(int i = 0; i < 4; ++i) {
-				if(dir != badDir && map.canMove(xmask((int)x,dir),zmask((int)z,dir))){
+				if(dir != badDir && map.canMoveGhost(xmask((int)x,dir),zmask((int)z,dir))){
 					return;
 				}
 				dir = (dir+1)%4;
