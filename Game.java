@@ -10,7 +10,11 @@ import org.lwjgl.Sys;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
-public class Game implements Defines {
+import java.applet.Applet;
+import java.awt.BorderLayout;
+import java.awt.Canvas;
+
+public class Game extends Applet implements Defines {
 	private boolean paused, running;
 	private long lastUpdate;
 
@@ -23,6 +27,10 @@ public class Game implements Defines {
 	private static ArrayList<Event> events;
 
 	public static int state, level;
+
+	// Applet stuff 
+	private Canvas display_parent;
+	Thread gameThread;
 
 	/**
 	 * Main game loop.
@@ -202,9 +210,9 @@ public class Game implements Defines {
 			}
 
 			if(hover[1]){
-				ResMgr.font.drawString((Defines.WIDTH-ResMgr.font.getWidth("CREDITS"))/2+xoff,305+yoff,"CREDITS");
+				ResMgr.font.drawString((Defines.WIDTH-ResMgr.font.getWidth("LEVELS"))/2+xoff,305+yoff,"LEVELS");
 			} else {
-				ResMgr.font.drawString((Defines.WIDTH-ResMgr.font.getWidth("CREDITS"))/2,305,"CREDITS");
+				ResMgr.font.drawString((Defines.WIDTH-ResMgr.font.getWidth("LEVELS"))/2,305,"LEVELS");
 			}
 
 			if(hover[2]){
@@ -264,7 +272,12 @@ public class Game implements Defines {
 	private void draw2D(){
 		pushOrtho();
 		if(paused){
-			ResMgr.font.drawString(100,Defines.HEIGHT-100,"PAUSED");
+			int xoff = 2 - (int)Math.floor(Math.random()*5.0);
+			int yoff = 2 - (int)Math.floor(Math.random()*5.0);
+			xoff = 2 - (int)Math.floor(Math.random()*5.0);
+			yoff = 2 - (int)Math.floor(Math.random()*5.0);
+			ResMgr.font.drawString(50+xoff,Defines.HEIGHT-110+yoff,"PAUSED");
+			ResMgr.font.drawString(50+xoff,Defines.HEIGHT-70+yoff,"PRESS Q TO QUIT");
 		}
 		for(ScreenEffect se : effects){
 			se.draw();
@@ -320,16 +333,16 @@ public class Game implements Defines {
 	 *
 	 * @throws LWJGLException if display couldn't be created.
 	 */
-	private void init() throws Exception {
+	private void initGL() throws Exception {
 		// Create display
-		Display.setDisplayMode(new DisplayMode(WIDTH,HEIGHT));
+		Display.setDisplayMode(new DisplayMode(Defines.WIDTH,Defines.HEIGHT));
 		Display.create();
 
 		// Setup view matrix
-		glViewport(0,0,WIDTH,HEIGHT);
+		glViewport(0,0,Defines.WIDTH,Defines.HEIGHT);
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		GLU.gluPerspective(80.f,(float)WIDTH/(float)HEIGHT,0.01f,100.f);
+		GLU.gluPerspective(80.f,(float)Defines.WIDTH/(float)Defines.HEIGHT,0.01f,100.f);
 		glMatrixMode(GL_MODELVIEW);
 
 		glLoadIdentity();
@@ -378,11 +391,11 @@ public class Game implements Defines {
 	 * Makes sure display is set up,
 	 * calls game loop and destroy display on exit.
 	 *
-	 * @throws Exception If init() fails
+	 * @throws Exception If something goes bad. :(
 	 */
 	public void execute() throws Exception {
 		// Setup screen and OpenGL stuff
-		init();
+		initGL();
 
 		// Load resources
 		ResMgr.loadResources();
@@ -410,6 +423,62 @@ public class Game implements Defines {
 		catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+
+	// Applet methods
+	public void init(){
+		setLayout(new BorderLayout());
+		try{
+			display_parent = new Canvas(){
+				public final void addNotify(){
+					super.addNotify();
+					executeApplet();
+				}
+				public final void removeNotify(){
+					stopApplet();
+					super.removeNotify();
+				}
+			};
+			display_parent.setSize(Defines.WIDTH,Defines.HEIGHT);
+			add(display_parent);
+			display_parent.setFocusable(true);
+			display_parent.requestFocus();
+			display_parent.setIgnoreRepaint(true);
+			setVisible(true);
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	public void executeApplet(){
+		gameThread = new Thread(){
+			public void run(){
+				try{
+					Display.setParent(display_parent);
+					execute();
+				} catch (Exception e){
+					e.printStackTrace();
+				};
+			}
+		};
+		gameThread.start();
+	}
+
+	public void stopApplet(){
+		running = false;
+		try{
+			gameThread.join();
+		} catch (InterruptedException ie){
+			ie.printStackTrace();
+		}
+	}
+
+	public void start() {}
+	public void stop() {}
+
+	public void destroy(){
+		remove(display_parent);
+		super.destroy();
 	}
 
 	public static final float CLEARWAIT_TIME = 1.0f;
